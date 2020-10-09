@@ -165,6 +165,10 @@ case "$FIRMWARE" in
 	qxwlan,e2600ac-c2)
 		ath10kcal_extract "0:ART" 4096 12064
 		;;
+	dlink,dap-2610)
+		ath10kcal_extract "ART" 4096 12064
+		ath10kcal_patch_mac_crc $(mtd_get_mac_ascii bdcfg wlanmac)
+		;;
 	engenius,ens620ext)
 		ath10kcal_extract "ART" 4096 12064
 		ath10kcal_patch_mac_crc $(macaddr_add $(mtd_get_mac_ascii u-boot-env ethaddr) +2)
@@ -226,6 +230,10 @@ case "$FIRMWARE" in
 	qxwlan,e2600ac-c1 |\
 	qxwlan,e2600ac-c2)
 		ath10kcal_extract "0:ART" 20480 12064
+		;;
+	dlink,dap-2610)
+		ath10kcal_extract "ART" 20480 12064
+		ath10kcal_patch_mac_crc $(mtd_get_mac_ascii bdcfg wlanmac_a)
 		;;
 	engenius,ens620ext)
 		ath10kcal_extract "ART" 20480 12064

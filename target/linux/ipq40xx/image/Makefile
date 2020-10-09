@@ -1,7 +1,8 @@
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/image.mk
 
-DEVICE_VARS += RAS_BOARD RAS_ROOTFS_SIZE RAS_VERSION
+DEVICE_VARS += RAS_BOARD RAS_ROOTFS_SIZE RAS_VERSION \
+	       WRGG_DEVNAME WRGG_SIGNATURE
 
 define Device/Default
 	PROFILES := Default
@@ -58,6 +59,15 @@ define Build/SenaoFW
 		-e $@ \
 		-o $@.new
 	@cp $@.new $@
+endef
+
+define Build/wrgg-image
+	mkwrggimg -i $@ \
+	-o $@.new \
+	-d "$(WRGG_DEVNAME)" \
+	-s "$(WRGG_SIGNATURE)" \
+	-v "" -m "" -B ""
+	mv $@.new $@
 endef
 
 define Device/8dev_jalapeno
@@ -170,6 +180,32 @@ define Device/compex_wpj428
 	DEVICE_PACKAGES := kmod-gpio-beeper
 endef
 TARGET_DEVICES += compex_wpj428
+
+define Device/dlink_dap-2610
+	$(call Device/FitImageLzma)
+	DEVICE_DTS := qcom-ipq4018-dap-2610
+	DEVICE_DTS_CONFIG := config@ap.dk01.1-c1
+	BLOCKSIZE := 64k
+	DEVICE_TITLE := D-Link DAP-2610
+	WRGG_DEVNAME := /dev/mtdblock/8
+	WRGG_SIGNATURE := wapac30_dkbs_dap2610
+	IMAGE_SIZE := 14080k
+	IMAGES := sysupgrade.bin factory.bin
+	# Bootloader expects a special 160 byte header which is added by
+	# wrgg-image.
+	# Factory image size must be larger than 6MB, and size in wrgg header must
+	# match actual factory image size to be flashable from D-Link http server.
+	# Bootloader verifies checksum of wrgg image before booting, thus jffs2
+	# cannot be part of the wrgg image. This is solved in the factory image by
+	# having the rootfs at the end of the image (without pad-rootfs). And in
+	# the sysupgrade image only the kernel is included in the wrgg checksum,
+	# but this is not flashable from the D-link http server.
+	# append-rootfs must start on an erase block boundary.
+	IMAGE/factory.bin    := append-kernel | pad-offset 6144k 160 | append-rootfs | wrgg-image | check-size $$$$(IMAGE_SIZE)
+	IMAGE/sysupgrade.bin := append-kernel | wrgg-image | pad-to $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs | check-size $$$$(IMAGE_SIZE) | append-metadata
+	DEVICE_PACKAGES := ipq-wifi-dlink_dap2610
+endef
+TARGET_DEVICES += dlink_dap-2610
 
 define Device/engenius_eap1300
 	$(call Device/FitImage)

@@ -8,14 +8,17 @@ Signed-off-by: John Crispin <john@phrozen.org>
  arch/arm/boot/dts/Makefile | 8 ++++++++
  1 file changed, 8 insertions(+)
 
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -697,7 +697,31 @@ dtb-$(CONFIG_ARCH_QCOM) += \
+Index: linux-4.14.195/arch/arm/boot/dts/Makefile
+===================================================================
+--- linux-4.14.195.orig/arch/arm/boot/dts/Makefile
++++ linux-4.14.195/arch/arm/boot/dts/Makefile
+@@ -697,7 +697,32 @@ dtb-$(CONFIG_ARCH_QCOM) += \
  	qcom-apq8074-dragonboard.dtb \
  	qcom-apq8084-ifc6540.dtb \
  	qcom-apq8084-mtp.dtb \
 +	qcom-ipq4018-a42.dtb \
 +	qcom-ipq4018-ap120c-ac.dtb \
++	qcom-ipq4018-dap-2610.dtb \
 +	qcom-ipq4018-ea6350v3.dtb \
 +	qcom-ipq4018-eap1300.dtb \
 +	qcom-ipq4018-ens620ext.dtb \
